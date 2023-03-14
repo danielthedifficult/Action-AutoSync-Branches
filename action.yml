@@ -1,0 +1,23 @@
+name: AutoSync branches
+description: One-way synchronization between two branches. When pushing to Branch A, immediately reset branch B to reflect it.
+branding:
+  icon: 'arrow-right'
+  color: 'blue'
+
+on:
+  push:
+    branches:
+      - $AUTOSYNC_FROM
+jobs:
+  update-test-db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with: 
+          ref: "$AUTOSYNC_TO"
+      - name: Update test_db branch
+        run: |
+          git fetch origin
+          git reset origin/$AUTOSYNC_FROM
+          git push --force origin $AUTOSYNC_TO
